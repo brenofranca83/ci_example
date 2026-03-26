@@ -45,6 +45,21 @@ class TestUserManagement(unittest.TestCase):
                     "StrongP@ssw0rd", "1990-01-01")
         self.assertEqual(len(list_users()), 1)
 
+    def test_list_users_after_create(self):
+        create_user("Example", "example2@domain.com",
+                    "StrongP@ssw0rd", "1990-01-01")
+        create_user("Example", "example3@domain.com",
+                    "StrongP@ssw0rd", "1995-01-01")
+        create_user("Example", "example1@domain.com",
+                    "StrongP@ssw0rd", "1998-01-01")
+        
+        users = list_users()
+        self.assertEqual(len(users), 3)
+        self.assertEqual(users[0]["email"], "example1@domain.com")
+        self.assertEqual(users[1]["email"], "example2@domain.com")
+        self.assertEqual(users[2]["email"], "example3@domain.com")
+
+
     def test_delete_user(self):
         user = create_user("Example", "example@domain.com",
                            "StrongP@ssw0rd", "1990-01-01")
