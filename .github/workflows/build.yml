@@ -1,0 +1,34 @@
+name: build
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install poetry
+      run: pipx install poetry
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'poetry'
+    - run: poetry install --no-root
+
+    - name: Analysing the code with flake8
+      run: poetry run flake8
+
+    - name: Testing
+      run: |
+        poetry run coverage run --source . --module pytest
+        poetry run coverage report --show-missing
+        poetry run coverage xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
